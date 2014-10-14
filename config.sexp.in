@@ -1,6 +1,7 @@
 ;; Defaults -*- lisp -*-
 ((:swank-enabled . nil)
  (:swank-port . 4005)
+ (:webserver-address . "0.0.0.0")
  (:webserver-port . 8888)
  (:shutdown-port . 6200)
  (:store-path . "/var/lib/emacs-sync/"))

@@ -25,6 +25,9 @@
 (defparameter *swank-port* 4005
   "If *SWANK-ENABLED* is true, a swank server is started on this port.")
 
+(defparameter *webserver-address* "0.0.0.0"
+  "The hunchentoot server listens on this address.")
+
 (defparameter *webserver-port* 8888
   "The hunchentoot server listens on this port.")
 
@@ -45,6 +48,7 @@
   '((:swank-enabled *swank-enabled*)
     (:swank-port *swank-port*)
     (:webserver-port *webserver-port*)
+    (:webserver-address *webserver-address*)
     (:shutdown-port *shutdown-port*)
     (:store-path *store-path*)))
 
@@ -109,7 +113,8 @@ waits for a connection indefinitely."
   (setf *swank-server* (when *swank-enabled*
                          (swank:create-server :port *swank-port*
                                               :style :spawn :dont-close t)))
-  (setf *httpd* (start (make-instance 'easy-acceptor :port *webserver-port*))))
+  (setf *httpd* (start (make-instance 'easy-acceptor :address *webserver-address*
+                                                     :port *webserver-port*))))
 
 
 (defun shutdown ()
