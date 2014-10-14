@@ -105,13 +105,13 @@ and `gnus-topic-alist'.  Also see `gnus-variable-list'."
   :version "24.3"
   :type 'string)
 
-(defcustom sync-gnus-username "russell"
+(defcustom sync-gnus-username ""
   ""
   :group 'sync-gnus
   :version "24.3"
   :type 'string)
 
-(defcustom sync-gnus-api-key "eeh4uT-i9odah3osu=i|sh7uK3eMie"
+(defcustom sync-gnus-api-key ""
   "The name for this machine."
   :group 'sync-gnus
   :version "24.3"
