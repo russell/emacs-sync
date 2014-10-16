@@ -152,9 +152,9 @@ waits for a connection indefinitely."
       (:info (log:info message)))))
 
 
-(defun startup (&key config-path debug no-config)
+(defun startup (&key config-path debug)
   ;; Start our web server.
-  (unless no-config (initialize-parameters :path config-path))
+  (when config-path (initialize-parameters :path config-path))
   (if debug
       (setf *catch-errors-p* nil)
       (setf *catch-errors-p* t))
@@ -187,7 +187,7 @@ waits for a connection indefinitely."
   (sb-ext:quit))
 
 (defun main ()
-  (startup :config-path "/etc/emacs-sync/config.sexp")
+  (initialize-parameters :path "/etc/emacs-sync/config.sexp")
   (sb-daemon:daemonize :exit-parent t
                        :output (merge-pathnames "stdout.log" *logfile-pathname*)
                        :error (merge-pathnames "stderr.log" *logfile-pathname*)
@@ -197,5 +197,6 @@ waits for a connection indefinitely."
                        :sigterm 'signal-handler
                        :sigabrt 'signal-handler
                        :sigint 'signal-handler)
+  (startup)
   (loop
     (sleep 10)))
