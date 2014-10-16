@@ -33,6 +33,12 @@
 (defparameter *webserver-port* 8888
   "The hunchentoot server listens on this port.")
 
+(defparameter *webserver-ssl-certificate* nil
+  "SSL Certificate.")
+
+(defparameter *webserver-ssl-key* nil
+  "SSL Key.")
+
 (defparameter *daemon-group* nil)
 
 (defparameter *daemon-user* nil)
@@ -58,6 +64,8 @@
     (:swank-port *swank-port*)
     (:webserver-port *webserver-port*)
     (:webserver-address *webserver-address*)
+    (:webserver-ssl-certificate *webserver-ssl-certificate*)
+    (:webserver-ssl-key *webserver-ssl-key*)
     (:logfile-pathname *logfile-pathname*)
     (:user *daemon-user*)
     (:group *daemon-group*)
@@ -117,6 +125,9 @@ waits for a connection indefinitely."
   ()
   (:documentation "This is the acceptor for the emacs-sync server."))
 
+(defclass ssl-acceptor (acceptor hunchentoot:ssl-acceptor)
+  ()
+  (:documentation "This is an acceptor that mixes the emacs-sync SSL connections."))
 
 (defmethod acceptor-log-access ((acceptor acceptor) &key return-code)
   (log:info
@@ -153,8 +164,15 @@ waits for a connection indefinitely."
   (setf *swank-server* (when *swank-enabled*
                          (swank:create-server :port *swank-port*
                                               :style :spawn :dont-close t)))
-  (setf *httpd* (start (make-instance 'acceptor :address *webserver-address*
-                                                     :port *webserver-port*))))
+  (if (and *webserver-ssl-certificate* *webserver-ssl-key*)
+      (setf *httpd* (start (make-instance 'ssl-acceptor
+                                           :address *webserver-address*
+                                           :port *webserver-port*
+                                           :ssl-certificate-file *webserver-ssl-certificate*
+                                           :ssl-privatekey-file *webserver-ssl-key*)))
+      (setf *httpd* (start (make-instance 'acceptor
+                                           :address *webserver-address*
+                                           :port *webserver-port*)))))
 
 
 (defun shutdown ()
