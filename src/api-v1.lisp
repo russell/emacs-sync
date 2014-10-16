@@ -100,7 +100,8 @@
                            :collect `(:system ,(getf origional :system)
                                       :revision ,(getf origional :revision)
                                       :data ,key))
-                   (save-store namespace :database *db*))
+                   (save-store namespace :database *db*)
+                   (setf (header-out "x-sexp-revision") (database-max-revision)))
                  (progn
                    (setf (header-out "x-sexp-revision") revision)
                    (setf (return-code*) +http-conflict+)
