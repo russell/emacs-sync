@@ -1,8 +1,9 @@
 ;; Defaults -*- lisp -*-
-((:swank-enabled . nil)
+((:user . nil)
+ (:group . nil)
+ (:swank-enabled . nil)
  (:swank-port . 4005)
  (:webserver-address . "0.0.0.0")
  (:webserver-port . 8888)
  (:logfile-pathname . "/var/log/emacs-sync/")
- (:shutdown-port . 6200)
  (:store-pathname . "/var/lib/emacs-sync/"))

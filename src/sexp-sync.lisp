@@ -33,6 +33,10 @@
 (defparameter *webserver-port* 8888
   "The hunchentoot server listens on this port.")
 
+(defparameter *daemon-group* nil)
+
+(defparameter *daemon-user* nil)
+
 (defparameter *logfile-pathname* "."
   "The hunchentoot server listens on this address.")
 
@@ -55,7 +59,8 @@
     (:webserver-port *webserver-port*)
     (:webserver-address *webserver-address*)
     (:logfile-pathname *logfile-pathname*)
-    (:shutdown-port *shutdown-port*)
+    (:user *daemon-user*)
+    (:group *daemon-group*)
     (:store-pathname *store-pathname*)))
 
 
@@ -158,11 +163,21 @@ waits for a connection indefinitely."
   (stop *httpd*)
   (format t "done.~%"))
 
+(defun signal-handler (signal)
+  (format t "~A received~%" signal)
+  (shutdown)
+  (sb-ext:quit))
+
 (defun main ()
   (startup :config-path "/etc/emacs-sync/config.sexp")
-  (format t ";; Starting shutdown service at port: ~s.~%" *shutdown-port*)
-  (wait-for-shutdown-connection)
-  (format t ";; Shutdown connection detected at port ~S. Attempting to stop ... "
-          *shutdown-port*)
-  (shutdown)
-  (format t "done.~%"))
+  (sb-daemon:daemonize :exit-parent t
+                       :output (merge-pathnames "stdout.log" *logfile-pathname*)
+                       :error (merge-pathnames "stderr.log" *logfile-pathname*)
+                       :pidfile #P"/var/run/emacs-sync.pid"
+                       :user *daemon-user*
+                       :group *daemon-group*
+                       :sigterm 'signal-handler
+                       :sigabrt 'signal-handler
+                       :sigint 'signal-handler)
+  (loop
+    (sleep 10)))
