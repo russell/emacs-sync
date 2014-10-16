@@ -102,6 +102,7 @@
                                       :data ,key))
                    (save-store namespace :database *db*))
                  (progn
+                   (setf (header-out "x-sexp-revision") revision)
                    (setf (return-code*) +http-conflict+)
                    '(:message "Out of sync.  Fetch the latest records first.")))))))))))
 
