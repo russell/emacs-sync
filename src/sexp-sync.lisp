@@ -19,6 +19,8 @@
 (defparameter *httpd* nil
   "Bound to hunchentoot instance after startup.")
 
+(defparameter *swank-server* nil)
+
 (defparameter *swank-enabled* nil
   "If set to true, a swank server is started on port *SWANK-PORT*")
 
@@ -31,7 +33,10 @@
 (defparameter *webserver-port* 8888
   "The hunchentoot server listens on this port.")
 
-(defparameter *store-path* nil)
+(defparameter *logfile-pathname* "."
+  "The hunchentoot server listens on this address.")
+
+(defparameter *store-pathname* nil)
 
 (defparameter *username* nil)
 
@@ -49,8 +54,9 @@
     (:swank-port *swank-port*)
     (:webserver-port *webserver-port*)
     (:webserver-address *webserver-address*)
+    (:logfile-pathname *logfile-pathname*)
     (:shutdown-port *shutdown-port*)
-    (:store-path *store-path*)))
+    (:store-pathname *store-pathname*)))
 
 
 (defun initialize-parameters (&key path)
@@ -102,6 +108,33 @@ waits for a connection indefinitely."
       (sb-bsd-sockets:socket-close client-socket)
       (sb-bsd-sockets:socket-close socket))))
 
+(defclass acceptor (easy-acceptor)
+  ()
+  (:documentation "This is the acceptor for the emacs-sync server."))
+
+
+(defmethod acceptor-log-access ((acceptor acceptor) &key return-code)
+  (log:info
+   (remote-addr*)
+   (header-in* :x-forwarded-for)
+   (authorization)
+   (request-method*)
+   (script-name*)
+   (query-string*)
+   (server-protocol*)
+   return-code
+   (content-length*)
+   (referer)
+   (user-agent)))
+
+
+(defmethod acceptor-log-message ((acceptor acceptor) log-level format-string &rest format-arguments)
+  (let ((message (apply #'format nil format-string format-arguments)))
+    (case log-level
+      (:error (log:error message))
+      (:warning (log:warn message))
+      (:info (log:info message)))))
+
 
 (defun startup (&key config-path debug no-config)
   ;; Start our web server.
@@ -109,11 +142,13 @@ waits for a connection indefinitely."
   (if debug
       (setf *catch-errors-p* nil)
       (setf *catch-errors-p* t))
+  (when *logfile-pathname*
+    (log:config :nofile :daily (merge-pathnames "log" *logfile-pathname*)))
   (ensure-directories-exist *store-path*)
   (setf *swank-server* (when *swank-enabled*
                          (swank:create-server :port *swank-port*
                                               :style :spawn :dont-close t)))
-  (setf *httpd* (start (make-instance 'easy-acceptor :address *webserver-address*
+  (setf *httpd* (start (make-instance 'acceptor :address *webserver-address*
                                                      :port *webserver-port*))))
 
 

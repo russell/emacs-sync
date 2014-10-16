@@ -20,7 +20,7 @@
 (defparameter *dbs* (make-hash-table :test 'equal))
 
 (defun pathname-to-database (namespace username)
-  (let ((directory (pathname-as-directory (merge-pathnames username *store-path*))))
+  (let ((directory (pathname-as-directory (merge-pathnames username *store-pathname*))))
     (values
      (merge-pathnames namespace directory)
      directory)))

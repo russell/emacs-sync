@@ -5,7 +5,7 @@
   :description "Describe emacs-sync here"
   :author "Russell Sim <russell.sim@gmail.com>"
   :license "GPL"
-  :depends-on (:hunchentoot :cl-ppcre :cl-fad :alexandria :swank)
+  :depends-on (:hunchentoot :cl-ppcre :cl-fad :alexandria :swank :log4cl)
   :components ((:static-file "emacs-sync.asd")
                (:module "src"
                 :components ((:file "package")

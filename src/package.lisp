@@ -28,6 +28,17 @@
                 #:header-in*
                 #:*catch-errors-p*
                 #:raw-post-data
+                #:remote-addr*
+                #:authorization
+                #:script-name*
+                #:query-string
+                #:server-protocol*
+                #:content-length*
+                #:referer
+                #:acceptor-log-access
+                #:acceptor-log-message
+                #:query-string*
+                #:user-agent
                 #:session-value
                 #:start-session
                 #:header-out
