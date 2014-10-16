@@ -191,7 +191,7 @@ waits for a connection indefinitely."
   (sb-daemon:daemonize :exit-parent t
                        :output (merge-pathnames "stdout.log" *logfile-pathname*)
                        :error (merge-pathnames "stderr.log" *logfile-pathname*)
-                       :pidfile #P"/var/run/emacs-sync.pid"
+                       :pidfile #P"/var/run/emacs-sync/emacs-sync.pid"
                        :user *daemon-user*
                        :group *daemon-group*
                        :sigterm 'signal-handler
