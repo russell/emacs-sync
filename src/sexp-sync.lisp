@@ -159,7 +159,7 @@ waits for a connection indefinitely."
       (setf *catch-errors-p* nil)
       (setf *catch-errors-p* t))
   (when *logfile-pathname*
-    (log:config :nofile :daily (merge-pathnames "log" *logfile-pathname*)))
+    (log:config :nofile :daily (merge-pathnames "emacs-sync.log" *logfile-pathname*)))
   (ensure-directories-exist *store-pathname*)
   (setf *swank-server* (when *swank-enabled*
                          (swank:create-server :port *swank-port*
