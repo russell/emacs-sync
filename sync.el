@@ -60,6 +60,7 @@
   :type 'string)
 
 (defcustom sync-verbose 6
+  ""
   :group 'sync
   :type 'integer)
 
